@@ -100,9 +100,6 @@ class DataTransformation:
             train_arr = np.c_[input_feature_train_final, np.array(target_feature_train_final) ]
             test_arr = np.c_[ input_feature_test_final, np.array(target_feature_test_final) ]
 
-            logging.info("Performing Accuracy Check..")
-            model_checker=SensorModel(train_arr, test_arr)
-            model_checker.get_best_model()
 
             #save numpy array data
             save_numpy_array_data( self.data_transformation_config.transformed_train_file_path, array=train_arr, )
