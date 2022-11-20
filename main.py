@@ -58,7 +58,7 @@ async def train_route():
 async def predict_route(csv_file: UploadFile=File(...)):
     try:
         #get data from user csv file
-        #conver csv file to dataframe
+        #convert csv file to dataframe
         df=None
         df = pd.read_csv(csv_file.file)
 
@@ -93,7 +93,7 @@ def main():
 
 
 if __name__=="__main__":
-    #main()
+    
     try:
         set_env_variable(env_file_path)
         app_run(app, host=APP_HOST, port=APP_PORT)
