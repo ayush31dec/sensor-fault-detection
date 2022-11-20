@@ -11,7 +11,7 @@ from fastapi import FastAPI, UploadFile, File
 from sensor.constant.application import APP_HOST, APP_PORT
 from starlette.responses import RedirectResponse
 from uvicorn import run as app_run
-from fastapi.responses import Response
+from fastapi.responses import Response, FileResponse
 from sensor.ml.model.estimator import ModelResolver,TargetValueMapping
 from sensor.utils.main_util import load_object
 from fastapi.middleware.cors import CORSMiddleware
@@ -61,7 +61,6 @@ async def predict_route(csv_file: UploadFile=File(...)):
         #conver csv file to dataframe
         df=None
         df = pd.read_csv(csv_file.file)
-        #print(df.head())
 
         model_resolver = ModelResolver(model_dir=SAVED_MODEL_DIR)
         if not model_resolver.is_model_exists():
@@ -73,8 +72,13 @@ async def predict_route(csv_file: UploadFile=File(...)):
         df['predicted_column'] = y_pred
         df['predicted_column'].replace(TargetValueMapping().reverse_mapping(),inplace=True)
         
-        #decide how to return file to user.
-        return df
+        os.makedirs('output')
+        file_path = os.path.join('output', 'output.csv')
+        df.to_csv(file_path)
+        if os.path.exists(file_path):
+            return FileResponse(file_path, media_type='text/csv')
+        else:
+            return 'No file'
     except Exception as e:
         raise Response(f"Error Occured! {e}")
 
