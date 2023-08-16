@@ -1,5 +1,5 @@
 import os
-from sensor.constant.training_pipeline import SAVED_MODEL_DIR,MODEL_FILE_NAME
+from sensor.constant.training_pipeline import SAVED_MODEL_DIR,MODEL_FILE_NAME, SAVED_PREPROCESSOR_DIR, PREPROCSSING_OBJECT_FILE_NAME
 from xgboost import XGBClassifier
 
 class TargetValueMapping:
@@ -69,3 +69,38 @@ class ModelResolver:
             return True
         except Exception as e:
             raise 
+
+class TransformerResolver:
+
+    def __init__(self, transformer_dir=SAVED_PREPROCESSOR_DIR) -> None:
+
+        self.transformer_dir = transformer_dir
+
+    def get_latest_transformer_path(self) -> str:
+        try:
+            timestamps = list(map(int,os.listdir(self.transformer_dir)))
+            latest_timestamp = max(timestamps)
+            latest_transformer_path= os.path.join(self.transformer_dir,f"{latest_timestamp}",PREPROCSSING_OBJECT_FILE_NAME)
+            return latest_transformer_path
+        
+        except Exception as e:
+            raise
+
+    def is_transformer_exists(self) -> bool:
+
+        try:
+            if not os.path.exists(self.transformer_dir):
+                return False
+
+            timestamps = os.listdir(self.transformer_dir)
+            if len(timestamps)==0:
+                return False
+            
+            latest_model_path = self.get_latest_transformer_path()
+
+            if not os.path.exists(latest_model_path):
+                return False
+            return True
+        
+        except Exception as e:
+            raise

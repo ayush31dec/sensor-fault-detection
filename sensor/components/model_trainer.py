@@ -30,6 +30,7 @@ class ModelTrainer:
     
     def initiate_model_trainer(self)->ModelTrainerArtifact:
         try:
+            trained_preprocessor_path=self.data_transformation_artifact.transformed_object_file_path
             train_file_path = self.data_transformation_artifact.transformed_train_file_path
             test_file_path = self.data_transformation_artifact.transformed_test_file_path
 
@@ -70,9 +71,11 @@ class ModelTrainer:
 
             #model trainer artifact
 
-            model_trainer_artifact = ModelTrainerArtifact(trained_model_file_path=self.model_trainer_config.trained_model_file_path, 
-            train_metric_artifact=classification_train_metric,
-            test_metric_artifact=classification_test_metric)
+            model_trainer_artifact = ModelTrainerArtifact(
+                trained_model_file_path=self.model_trainer_config.trained_model_file_path, 
+                trained_preprocessor_path=trained_preprocessor_path,
+                train_metric_artifact=classification_train_metric,
+                test_metric_artifact=classification_test_metric)
             logging.info(f"Model trainer artifact: {model_trainer_artifact}")
             return model_trainer_artifact
         except Exception as e:

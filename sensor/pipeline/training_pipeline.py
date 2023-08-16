@@ -1,7 +1,7 @@
 from sensor.entity.config_entity import TrainingPipelineConfig,DataIngestionConfig, DataValidationConfig,DataTransformationConfig, ModelTrainerConfig, ModelEvaluationConfig, ModelPusherConfig
 from sensor.entity.artifact_entity import DataIngestionArtifact, DataValidationArtifact,DataTransformationArtifact, ModelTrainerArtifact, ModelEvaluationArtifact
 from sensor.exception import SensorException
-import sys,os
+import sys
 from sensor.logger import logging
 from sensor.components.data_ingestion import DataIngestion
 from sensor.components.data_validation import DataValidation
@@ -10,7 +10,7 @@ from sensor.components.model_trainer import ModelTrainer
 from sensor.components.model_evaluation import ModelEvaluation
 from sensor.components.model_pusher import ModelPusher
 from sensor.constant.s3_bucket import TRAINING_BUCKET_NAME
-from sensor.constant.training_pipeline import SAVED_MODEL_DIR
+from sensor.constant.training_pipeline import SAVED_MODEL_DIR,SAVED_PREPROCESSOR_DIR
 from sensor.cloud_storage.s3_syncer import S3Sync
 
 
@@ -100,6 +100,14 @@ class TrainPipeline:
             self.s3_sync.sync_folder_to_s3(folder = SAVED_MODEL_DIR,aws_buket_url=aws_buket_url)
         except Exception as e:
             raise SensorException(e,sys)
+        
+    def sync_saved_transformer_dir_to_s3(self):
+        try:
+            aws_buket_url = f"s3://{TRAINING_BUCKET_NAME}/{SAVED_MODEL_DIR}"
+            logging.info("Syncing Saved Models Folder to S3 Bucket")
+            self.s3_sync.sync_folder_to_s3(folder = SAVED_PREPROCESSOR_DIR,aws_buket_url=aws_buket_url)
+        except Exception as e:
+            raise SensorException(e,sys)
 
 
     def run_pipeline(self):
@@ -118,5 +126,4 @@ class TrainPipeline:
             self.sync_saved_model_dir_to_s3()
         except  Exception as e:
             TrainPipeline.is_pipeline_running=False
-            self.sync_artifact_dir_to_s3()
             raise  SensorException(e,sys)
