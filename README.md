@@ -26,8 +26,7 @@ The problem is to reduce the cost due to unnecessary repairs. So it is required 
 
 
 ### Data Collection:
-![193536736-5ccff349-d1fb-486e-b920-02ad7974d089](https://github.com/ayush31dec/sensor-fault-detection/assets/63890982/1e812acf-e741-4da7-808f-9fb7555703f7)
-
+![Screenshot 2023-08-17 001702](https://github.com/ayush31dec/sensor-fault-detection/assets/63890982/8e73c22e-ce06-4354-afa7-e216ea9826b2)
 
 ### Project Architecture:
 ![193536768-ae704adc-32d9-4c6c-b234-79c152f756c5](https://github.com/ayush31dec/sensor-fault-detection/assets/63890982/9db5f0b9-729e-4f9c-b565-7c056defa833)
