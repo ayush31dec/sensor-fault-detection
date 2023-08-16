@@ -124,6 +124,7 @@ class TrainPipeline:
             TrainPipeline.is_pipeline_running=False
             self.sync_artifact_dir_to_s3()
             self.sync_saved_model_dir_to_s3()
+            self.sync_saved_transformer_dir_to_s3()
         except  Exception as e:
             TrainPipeline.is_pipeline_running=False
             raise  SensorException(e,sys)
