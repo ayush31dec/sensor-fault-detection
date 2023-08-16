@@ -1,3 +1,4 @@
+import sklearn
 from sensor.exception import SensorException
 from sensor.logger import logging
 from sensor.entity.config_entity import DataIngestionConfig
@@ -67,7 +68,7 @@ class DataIngestion:
 
             logging.info(f"Exported train and test file path.")
         except Exception as e:
-            raise SensorData(e,sys)
+            raise SensorException(e,sys)
     
 
     def initiate_data_ingestion(self) -> DataIngestionArtifact:

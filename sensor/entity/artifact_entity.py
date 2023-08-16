@@ -30,6 +30,7 @@ class ClassificationMetricArtifact:
 @dataclass
 class ModelTrainerArtifact:
     trained_model_file_path: str
+    trained_preprocessor_path : str
     train_metric_artifact: ClassificationMetricArtifact
     test_metric_artifact: ClassificationMetricArtifact
 
@@ -39,6 +40,7 @@ class ModelEvaluationArtifact:
     improved_accuracy: float
     best_model_path: str
     trained_model_path: str
+    trained_preprocessor_path: str
     train_model_metric_artifact: ClassificationMetricArtifact
     best_model_metric_artifact: ClassificationMetricArtifact
 
@@ -46,3 +48,4 @@ class ModelEvaluationArtifact:
 class ModelPusherArtifact:
     saved_model_path:str
     model_file_path:str
+    saved_preprocessor_path:str

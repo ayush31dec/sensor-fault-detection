@@ -4,9 +4,9 @@ import os,sys
 from sensor.logger import logging
 from sensor.pipeline import training_pipeline
 from sensor.pipeline.training_pipeline import TrainPipeline
+from sensor.pipeline.prediction_pipeline import Prediction
 import os
 from sensor.utils.main_util import read_yaml_file
-from sensor.constant.training_pipeline import SAVED_MODEL_DIR
 from fastapi import FastAPI, UploadFile, File
 from sensor.constant.application import APP_HOST, APP_PORT
 from starlette.responses import RedirectResponse
@@ -17,6 +17,8 @@ from sensor.utils.main_util import load_object
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 
+from sensor.data_access.sensor_data import SensorData
+
 env_file_path=os.path.join(os.getcwd(),"env.yaml")
 
 def set_env_variable(env_file_path):
@@ -24,7 +26,6 @@ def set_env_variable(env_file_path):
     if os.getenv('MONGO_DB_URL',None) is None:
         env_config = read_yaml_file(env_file_path)
         os.environ['MONGO_DB_URL']=env_config['MONGO_DB_URL']
-
 
 app = FastAPI()
 origins = ["*"]
@@ -60,21 +61,19 @@ async def predict_route(csv_file: UploadFile=File(...)):
         #get data from user csv file
         #convert csv file to dataframe
         df=None
-        df = pd.read_csv(csv_file.file)
+        df = pd.read_csv(csv_file.file, na_values='na')
+        
+        prediction_pl = Prediction(df)
+        pred_df = prediction_pl.initiate_prediction()
 
-        model_resolver = ModelResolver(model_dir=SAVED_MODEL_DIR)
-        if not model_resolver.is_model_exists():
-            return Response("Model is not available")
-        
-        best_model_path = model_resolver.get_best_model_path()
-        model = load_object(file_path=best_model_path)
-        y_pred = model.predict(df)
-        df['predicted_column'] = y_pred
-        df['predicted_column'].replace(TargetValueMapping().reverse_mapping(),inplace=True)
-        
-        os.makedirs('output')
         file_path = os.path.join('output', 'output.csv')
-        df.to_csv(file_path)
+        if not os.path.exists('output'):
+            os.makedirs('output')
+
+        elif os.path.isfile(os.path.join('output', 'output.csv')):
+            os.remove(file_path)
+
+        pred_df.to_csv(file_path)
         if os.path.exists(file_path):
             return FileResponse(file_path, media_type='text/csv')
         else:
@@ -82,19 +81,11 @@ async def predict_route(csv_file: UploadFile=File(...)):
     except Exception as e:
         raise Response(f"Error Occured! {e}")
 
-def main():
-    try:
-        set_env_variable(env_file_path)
-        training_pipeline = TrainPipeline()
-        training_pipeline.run_pipeline()
-    except Exception as e:
-        print(e)
-        logging.exception(e)
-
 
 if __name__=="__main__":
     
     try:
+        
         set_env_variable(env_file_path)
         app_run(app, host=APP_HOST, port=APP_PORT)
     except Exception as e:

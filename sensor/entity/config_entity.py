@@ -26,6 +26,7 @@ class DataIngestionConfig:
             )
             self.train_test_split_ratio: float = training_pipeline.DATA_INGESTION_TRAIN_TEST_SPLIT_RATION
             self.collection_name: str = training_pipeline.DATA_INGESTION_COLLECTION_NAME
+            self.database_name: str = training_pipeline.DATA_INGESTION_DATABASE
 
 class DataValidationConfig:
         def __init__(self,training_pipeline_config:TrainingPipelineConfig):
@@ -81,8 +82,13 @@ class ModelPusherConfig:
             training_pipeline_config.artifact_dir, training_pipeline.MODEL_PUSHER_DIR_NAME
         )
         self.model_file_path = os.path.join(self.model_evaluation_dir,training_pipeline.MODEL_FILE_NAME)
+        self.preprocessor_file_path = os.path.join(self.model_evaluation_dir,training_pipeline.PREPROCSSING_OBJECT_FILE_NAME)
         timestamp = round(datetime.now().timestamp())
         self.saved_model_path=os.path.join(
             training_pipeline.SAVED_MODEL_DIR,
             f"{timestamp}",
             training_pipeline.MODEL_FILE_NAME)
+        self.saved_preprocessor_path=os.path.join(
+            training_pipeline.SAVED_PREPROCESSOR_DIR,
+            f"{timestamp}",
+            training_pipeline.PREPROCSSING_OBJECT_FILE_NAME)
